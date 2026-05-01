@@ -18,7 +18,7 @@ st.markdown("AI-powered recommendations for any city worldwide.")
 # -------------------------
 try:
     genai.configure(api_key=st.secrets["Google_Gemini_Key"])
-    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+    gemini_model = genai.GenerativeModel("gemini-2.0-flash")
     GEMINI_AVAILABLE = True
 except:
     GEMINI_AVAILABLE = False
