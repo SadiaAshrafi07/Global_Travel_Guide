@@ -19,7 +19,7 @@ st.markdown("AI-powered recommendations for any city worldwide.")
 # -------------------------
 try:
     genai.configure(api_key=st.secrets["Google_Gemini_Key"])
-    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+    gemini_model = genai.GenerativeModel("gemini-2.0-flash")
     GEMINI_AVAILABLE = True
 except Exception:
     GEMINI_AVAILABLE = False
@@ -170,14 +170,32 @@ def rank_places(df):
 
 
 # -------------------------
-# Unsplash Images
-# FIX 7: source.unsplash.com/600x400 URL format is DEPRECATED and broken.
-#         Replaced with the correct Unsplash Source API format.
+# Images
+# NOTE: source.unsplash.com was fully shut down — returns broken "0" text.
+# Using Wikimedia Commons REST API as primary (real relevant photos),
+# with a deterministic Lorem Picsum fallback (always works, random travel photo).
 # -------------------------
 def get_image_url(place, city):
-    # Encode spaces for URL safety
-    query = f"{place} {city}".replace(" ", "+")
-    return f"https://source.unsplash.com/featured/600x400/?{query}"
+    """
+    Try Wikimedia Commons for a real photo of the place.
+    Falls back to Lorem Picsum (stable, always returns a photo).
+    Returns a working image URL string.
+    """
+    try:
+        search_term = f"{place} {city}"
+        wiki_url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + search_term.replace(" ", "_")
+        res = requests.get(wiki_url, timeout=5)
+        if res.status_code == 200:
+            data = res.json()
+            thumb = data.get("thumbnail", {}).get("source", "")
+            if thumb:
+                return thumb
+    except Exception:
+        pass
+
+    # Fallback: Lorem Picsum — deterministic seed from place name so same place = same image
+    seed = abs(hash(place)) % 1000
+    return f"https://picsum.photos/seed/{seed}/600/400"
 
 
 # -------------------------
