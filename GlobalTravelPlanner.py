@@ -307,9 +307,8 @@ if st.sidebar.button("🔍 Generate Plan"):
         st.warning("😕 No results found for this city. Try a larger nearby city.")
         st.stop()
 
-    # Map tab removed — 5 tabs only
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["🏨 Stays", "🍽️ Food", "📍 Places", "🚗 Travel & Budget", "🤖 AI Plan"]
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["🏨 Stays", "🍽️ Food", "📍 Places", "🚗 Travel & Budget"]
     )
 
     # ── Tab 1: Hotels ──────────────────────────────────────────────────────────
@@ -393,12 +392,7 @@ if st.sidebar.button("🔍 Generate Plan"):
         high_est   = (high_hotel + high_food) * num_days
         st.info(f"For a **{num_days}-day** trip: **~${low_est}–${high_est}** (excluding flights & activities)")
 
-    # ── Tab 5: AI Plan ─────────────────────────────────────────────────────────
-    with tab5:
-        st.subheader("🤖 AI-Generated Travel Itinerary")
-        with st.spinner("✍️ Generating your personalised itinerary..."):
-            ai_text = generate_ai_plan(city, budget, travel_style, num_days)
-        st.markdown(ai_text)
+   
 
 else:
     st.info("👈 Enter a city in the sidebar and click **Generate Plan** to get started.")
