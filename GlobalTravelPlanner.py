@@ -230,28 +230,23 @@ def generate_ai_plan(city, budget, travel_style, num_days):
         headers["Authorization"] = f"Bearer {hf_token}"
 
     payload = {
-        "inputs":     prompt,
-        "parameters": {
-            "max_new_tokens":  900,
-            "temperature":     0.7,
-            "return_full_text": False,
-        },
+    "model": "mistralai/Mistral-7B-Instruct-v0.2",
+    "messages": [{"role": "user", "content": prompt}],
+    "max_tokens": 900,
+    "temperature": 0.7,
     }
 
     try:
         res = requests.post(
-            "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
-            headers=headers,
+            "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2/v1/chat/completions",
             json=payload,
             timeout=45,
         )
 
         if res.status_code == 200:
             result = res.json()
-            if isinstance(result, list) and result:
-                return result[0].get("generated_text", "").strip()
-            return str(result)
-
+            return result["choices"][0]["message"]["content"].strip()
+            
         elif res.status_code == 503:
             return (
                 "⏳ The AI model is warming up (cold start). "
